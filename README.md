@@ -20,7 +20,7 @@ then they are prompted to enter the employee’s first name, last name, role, an
 
 # Employee-Tracker Preview 
 > Preview ![Employee-Tracker](Assets/Note.Taker.png) 
-# Employee-Tracker Video Link
+## Employee-Tracker Video Link
 - 
 
 ## Repository & Webpage:
