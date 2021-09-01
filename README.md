@@ -19,7 +19,7 @@ then they are prompted to enter the employee’s first name, last name, role, an
 - When the user chooses to update an employee role then they are prompted to select an employee to update and their new role and this information is updated in the database.
 
 # Employee-Tracker Preview 
-> Preview ![Employee-Tracker](Assets/Note.Taker.png) 
+> Preview ![Employee-Tracker] 
 ## Employee-Tracker Video Link
 - 
 
