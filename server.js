@@ -1,8 +1,7 @@
 const inquirer = require('inquirer');
-const sequelize = require('./config/connection')
+const sequelize = require('./config/connection');
 const mysql = require ('mysql2');
-const Connection = require('mysql2/typings/mysql/lib/Connection');
-require("console.table");
+const cTable = require("console.table");
 
 const PORT = process.env.PORT || 3001;
 
@@ -19,8 +18,7 @@ sequelize.sync().then(() => {
   });
 
   function promptUser () {
-      inquirer
-      .prompt({
+      inquirer.prompt({
           type: "list",
           name: "option",
           message: "What would you like to do?",
@@ -32,7 +30,7 @@ sequelize.sync().then(() => {
               "Add Role",
               "Add Employee",
               "Update Employee Role",
-              "ALL DONE"
+              "Quit"
             ],
       })
       .then(function(result) {
@@ -58,15 +56,17 @@ sequelize.sync().then(() => {
                case "Update Employee Role":
                   UpdateEmployeeRole();
                   break;
-                case "ALL DONE":
+                case "Quit":
                   Connection.end();
+                  Quit();
                   break;
+                  
           }
       });
   }
 
   function viewAllDepartments() {
-      let query = "SELECT * FROM department": {
+      let query = "SELECT * FROM department"; {
           connection.query(query, function(err,res) {
               if (err) throw err;
               console.tables(res);
@@ -76,7 +76,7 @@ sequelize.sync().then(() => {
   }
 
   function viewAllRoles() {
-    let query = "SELECT * FROM role": {
+    let query = "SELECT * FROM role"; {
         connection.query(query, function(err,res) {
             if (err) throw err;
             console.tables(res);
@@ -86,7 +86,7 @@ sequelize.sync().then(() => {
 }
 
    function viewAllEmployees() {
-    let query = "SELECT * FROM employee": {
+    let query = "SELECT * FROM employee"; {
         connection.query(query, function(err,res) {
             if (err) throw err;
             console.tables(res);
@@ -95,7 +95,7 @@ sequelize.sync().then(() => {
     }
 }
 
-  function addDepartment() {
+  function AddDepartment() {
     inquirer.prompt({
         type: "input",
         message: "What is name of department?",
@@ -111,31 +111,88 @@ sequelize.sync().then(() => {
   }
 
   function addRole() {
-    let query = "SELECT * FROM role": {
-        connection.query(query, function(err,res) {
+    inquirer.prompt([ {
+        type: "input",
+        message: "What is name of role?",
+        name: "Role"
+    },
+    {
+        type: "input",
+        message: "What is role salary?",
+        name: "roleSalary"
+    },
+    {
+        input: "type",
+        message:"What department id number?",
+        name: "roleDept"
+    }
+    ])
+    .then(function(answer) {
+        connection.query("INSERT INTO role (title, salary, department_id) VALUES (?,?,?)", 
+        [answer.Role, answer.roleSalary, answer.roleDept], function(err, res) {
             if (err) throw err;
-            console.tables(res);
+            console.table(res);
             promptUser();
         });
+      });
     }
-}
 
-  function addEmployee() {
-    let query = "SELECT * FROM employee": {
-        connection.query(query, function(err,res) {
-            if (err) throw err;
-            console.tables(res);
+  function AddEmployee() {
+    inquirer.prompt ([
+        {
+            type: "input",
+            message: "What is employees first name?",
+            name: "empFirst"
+        },
+        {
+            type: "input",
+            message: "What is employees last name?",
+            name: "empLast"
+        },
+        {
+            type: "input",
+            message: "What is employees role id number?",
+            name: "empRoleID"
+        },
+        {
+            type: "input",
+            message: "What is manager id number?",
+            name: "empMgrID"
+        }
+    ])
+    .then(function(answer) {
+        connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)", 
+        [answer.empFirst, answer.empLast, answer.empRoleID, answer.empMgrID], function(err, res){
+            if(err) throw err;
+            console.table(res);
             promptUser();
         });
+      });
     }
-}
+    function UpdateEmployeeRole() {
+        inquirer.prompt([
+            {
+                type: "input",
+                message: "Which employee are you updating?",
+                name: "empUpdate"
+            },
+            {
+                type: "input",
+                message: "Updating role to...",
+                name: "empRoleUpdate"
+            }
+        ])
+        .then(function(answer) {
+            connection.query('UPDATE employee SET role_id =? WHERE first_name = ?',
+            [answer.empUpdate, answer.EmpRoleUpdate], function (err, res){
+                if (err) throw err;
+                console.table(res);
+                promptUser();
+            });
+        });
+    }
 
-
-db.query('SELECT * FROM employee WHERE mangaer_id IS NULL', function (err, results) {
-    // this will console log the results from the 2 parameters above
-    console.log(results);
-  });
-
-
-
-
+    function Quit() {
+        connection.end();
+        process.exit();
+    }
